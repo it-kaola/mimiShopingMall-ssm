@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bjpowernode.dao.ProductInfoDao" >
+
+  <!--按id降序排序，查询所有商品信息（不分页）-->
+  <select id="getAllProduct" resultType="com.bjpowernode.domain.ProductInfo">
+    select
+        p_id pId,
+        p_name pName,
+        p_content pContent,
+        p_price pPrice,
+        p_image pImage,
+        p_number pNumber,
+        type_id typeId,
+        p_date pDate
+    from
+        product_info
+    order by
+        p_id desc
+  </select>
+
+
+  <insert id="saveProductInfo">
+    insert into
+        product_info (p_name, p_content, p_price, p_image, p_number, type_id, p_date)
+    values
+        (#{pName}, #{pContent}, #{pPrice}, #{pImage}, #{pNumber}, #{typeId}, #{pDate})
+  </insert>
+
+
+  <select id="getProductInfoById" resultType="com.bjpowernode.domain.ProductInfo">
+    select
+        p_id pId,
+        p_name pName,
+        p_content pContent,
+        p_price pPrice,
+        p_image pImage,
+        p_number pNumber,
+        type_id typeId,
+        p_date pDate
+    from
+        product_info
+    where
+        p_id = #{pid}
+  </select>
+
+
+  <update id="updateProductById">
+    update product_info set p_name=#{pName}, p_content=#{pContent}, p_price=#{pPrice}, p_image=#{pImage}, p_number=#{pNumber} where p_id=#{pId}
+  </update>
+
+  <delete id="deleteProductInfoById">
+    delete from product_info where p_id=#{pid}
+  </delete>
+
+  <delete id="deleteBatch">
+    delete from product_info where p_id in
+    <foreach collection="array" item="id" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </delete>
+
+  <select id="selectProductInfoByConditions" resultType="com.bjpowernode.domain.ProductInfo">
+    select
+        p_id pId,
+        p_name pName,
+        p_content pContent,
+        p_price pPrice,
+        p_image pImage,
+        p_number pNumber,
+        type_id typeId,
+        p_date pDate
+    from
+        product_info
+    <where>
+      <if test="pName != '' and pName != null">
+        p_name like '%' #{pName} '%'
+      </if>
+      <if test="typeId != -1 and typeId != null">
+        and type_id=#{typeId}
+      </if>
+      <!--当最低价格不为空并且最高价格为空时-->
+      <if test="(lPrice != null and lPrice != '') and (hPrice == null or hPrice == '')">
+        and p_price &gt;= #{lPrice}
+      </if>
+      <!--当最低价格为空并且最高价格不为空时-->
+      <if test="(lPrice == null or lPrice == '') and (hPrice != null and hPrice != '')">
+        and p_price &lt;= #{hPrice}
+      </if>
+      <!--当最低价格最高价格都不为空时-->
+      <if test="(lPrice != null and lPrice != '') and (hPrice != null and hPrice != '')">
+        and (p_price between #{lPrice} and #{hPrice})
+      </if>
+    </where>
+    order by p_id desc
+
+  </select>
+
+</mapper>

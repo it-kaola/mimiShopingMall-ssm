@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bjpowernode.dao.AdminDao" >
+
+  <!--根据用户名和密码查询用户信息，做登录验证-->
+  <select id="selectOneAdmin" resultType="com.bjpowernode.domain.Admin">
+    select a_id aId, a_name aName, a_pass aPass from admin where a_name=#{aName} and a_pass=#{aPass}
+  </select>
+
+</mapper>
